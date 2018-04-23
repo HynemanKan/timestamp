@@ -1,9 +1,9 @@
 print("""
-####################
-#文件时间戳生成工具#
-####################
-#   作者：hyneman  #
-####################
+##############################
+#   timestamp setting tool   #
+##############################
+#       author： hyneman     #
+##############################
 """)
 import win32ui
 import time
@@ -12,16 +12,15 @@ from Crypto.Cipher import AES
 from binascii import b2a_hex, a2b_hex  
 import hashlib
 import zmail
-def gettimestr():#取得时间戳
+def gettimestr():#get time as str
     t = time.time()
     t = time.localtime(t)
-    tl = list(t)
-    t_str = str(tl[0])+"-"+str(tl[1])+"-"+str(tl[2])+"-"+str(tl[3])+"-"+str(tl[4])+"-"+str(tl[5]) 
+    t_str = time.strftime("%Y-%m-%d-%H:%M:%S")
     return t_str
 
-def fileaddress():#弹出打开文件对话框
+def fileaddress():#open chosen windows
     try:
-        dlg = win32ui.CreateFileDialog(1, '','test.xlsx') # 1表示打开文件对话框
+        dlg = win32ui.CreateFileDialog(1, '','test.xlsx') 
         dlg.DoModal()
         filename = dlg.GetPathName()
     except Exception as e:
@@ -59,7 +58,7 @@ class prpcrypt():
     def encrypt(self, text):  
         cryptor = AES.new(self.key, self.mode, self.key)  
         text = text.encode("utf-8")  
-        #这里密钥key 长度必须为16（AES-128）、24（AES-192）、或32（AES-256）Bytes 长度.目前AES-128足够用  
+        #key length 16（AES-128）、24（AES-192）、或32（AES-256）Bytes   
         length = 16  
         count = len(text)  
         add = length - (count % length)  
@@ -98,16 +97,16 @@ def initialize():
 user_inf= initialize()
 tstr=gettimestr()
 file_ad=fileaddress()
-name = input("邮件名：")
-print("开始计算文件哈希值...")
+name = input("subject：")
+print("counting the hash values...")
 sha_str = hash_sha256(file_ad)
 md5_str = hash_md5(file_ad)
-print("计算完成，正在发生邮件")
+print("completed ,senddning email")
 text = "file:"+file_ad +"\ntime:" + tstr + "\nSHA256:" + sha_str + "\nMD5:"+ md5_str
 mail = {
-    'subject': name,  # Anything you want.
-    'content': text,  # Anything you want.
+    'subject': name,  
+    'content': text,  
 }
 server = zmail.server(user_inf[0],user_inf[1])
 server.send_mail(user_inf[0], mail)
-input("时间戳生成完成，按回车退出")
+input("pass'enter' to exit ")
